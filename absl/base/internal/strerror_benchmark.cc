@@ -1,5 +1,4 @@
-//
-// Copyright 2018 The Abseil Authors.
+// Copyright 2020 The Abseil Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +11,28 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-#include "absl/random/mocking_bit_gen.h"
 
+#include <cerrno>
+#include <cstdio>
 #include <string>
 
-namespace absl {
-ABSL_NAMESPACE_BEGIN
-MockingBitGen::~MockingBitGen() {
+#include "absl/base/internal/strerror.h"
+#include "benchmark/benchmark.h"
 
-  for (const auto& del : deleters_) {
-    del();
+namespace {
+#if defined(__GLIBC__) || defined(__APPLE__)
+void BM_SysErrList(benchmark::State& state) {
+  for (auto _ : state) {
+    benchmark::DoNotOptimize(std::string(sys_errlist[ERANGE]));
   }
 }
+BENCHMARK(BM_SysErrList);
+#endif
 
-ABSL_NAMESPACE_END
-}  // namespace absl
+void BM_AbslStrError(benchmark::State& state) {
+  for (auto _ : state) {
+    benchmark::DoNotOptimize(absl::base_internal::StrError(ERANGE));
+  }
+}
+BENCHMARK(BM_AbslStrError);
+}  // namespace
