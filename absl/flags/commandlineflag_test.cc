@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "absl/flags/internal/commandlineflag.h"
+#include "absl/flags/commandlineflag.h"
 
 #include <memory>
 #include <string>
@@ -70,9 +70,10 @@ TEST_F(CommandLineFlagTest, TestAttributesAccessMethods) {
   EXPECT_EQ(flag_01->Help(), "int_flag help");
   EXPECT_TRUE(!flag_01->IsRetired());
   EXPECT_TRUE(flag_01->IsOfType<int>());
-  EXPECT_TRUE(
-      absl::EndsWith(flag_01->Filename(),
-                     "absl/flags/internal/commandlineflag_test.cc"))
+  EXPECT_TRUE(!flag_01->IsOfType<bool>());
+  EXPECT_TRUE(!flag_01->IsOfType<std::string>());
+  EXPECT_TRUE(absl::EndsWith(flag_01->Filename(),
+                             "absl/flags/commandlineflag_test.cc"))
       << flag_01->Filename();
 
   auto* flag_02 = flags::FindCommandLineFlag("string_flag");
@@ -82,9 +83,10 @@ TEST_F(CommandLineFlagTest, TestAttributesAccessMethods) {
   EXPECT_EQ(flag_02->Help(), "string_flag help");
   EXPECT_TRUE(!flag_02->IsRetired());
   EXPECT_TRUE(flag_02->IsOfType<std::string>());
-  EXPECT_TRUE(
-      absl::EndsWith(flag_02->Filename(),
-                     "absl/flags/internal/commandlineflag_test.cc"))
+  EXPECT_TRUE(!flag_02->IsOfType<bool>());
+  EXPECT_TRUE(!flag_02->IsOfType<int>());
+  EXPECT_TRUE(absl::EndsWith(flag_02->Filename(),
+                             "absl/flags/commandlineflag_test.cc"))
       << flag_02->Filename();
 
   auto* flag_03 = flags::FindRetiredFlag("bool_retired_flag");
@@ -94,6 +96,8 @@ TEST_F(CommandLineFlagTest, TestAttributesAccessMethods) {
   EXPECT_EQ(flag_03->Help(), "");
   EXPECT_TRUE(flag_03->IsRetired());
   EXPECT_TRUE(flag_03->IsOfType<bool>());
+  EXPECT_TRUE(!flag_03->IsOfType<int>());
+  EXPECT_TRUE(!flag_03->IsOfType<std::string>());
   EXPECT_EQ(flag_03->Filename(), "RETIRED");
 }
 
@@ -125,57 +129,57 @@ TEST_F(CommandLineFlagTest, TestParseFromCurrentValue) {
       flags::PrivateHandleAccessor::IsSpecifiedOnCommandLine(*flag_01));
 
   EXPECT_TRUE(flags::PrivateHandleAccessor::ParseFrom(
-      flag_01, "11", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange, &err));
+      *flag_01, "11", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange, err));
   EXPECT_EQ(absl::GetFlag(FLAGS_int_flag), 11);
   EXPECT_FALSE(
       flags::PrivateHandleAccessor::IsSpecifiedOnCommandLine(*flag_01));
 
   EXPECT_TRUE(flags::PrivateHandleAccessor::ParseFrom(
-      flag_01, "-123", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange,
-      &err));
+      *flag_01, "-123", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange,
+      err));
   EXPECT_EQ(absl::GetFlag(FLAGS_int_flag), -123);
   EXPECT_FALSE(
       flags::PrivateHandleAccessor::IsSpecifiedOnCommandLine(*flag_01));
 
   EXPECT_TRUE(!flags::PrivateHandleAccessor::ParseFrom(
-      flag_01, "xyz", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange,
-      &err));
+      *flag_01, "xyz", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange,
+      err));
   EXPECT_EQ(absl::GetFlag(FLAGS_int_flag), -123);
   EXPECT_EQ(err, "Illegal value 'xyz' specified for flag 'int_flag'");
   EXPECT_FALSE(
       flags::PrivateHandleAccessor::IsSpecifiedOnCommandLine(*flag_01));
 
   EXPECT_TRUE(!flags::PrivateHandleAccessor::ParseFrom(
-      flag_01, "A1", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange, &err));
+      *flag_01, "A1", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange, err));
   EXPECT_EQ(absl::GetFlag(FLAGS_int_flag), -123);
   EXPECT_EQ(err, "Illegal value 'A1' specified for flag 'int_flag'");
   EXPECT_FALSE(
       flags::PrivateHandleAccessor::IsSpecifiedOnCommandLine(*flag_01));
 
   EXPECT_TRUE(flags::PrivateHandleAccessor::ParseFrom(
-      flag_01, "0x10", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange,
-      &err));
+      *flag_01, "0x10", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange,
+      err));
   EXPECT_EQ(absl::GetFlag(FLAGS_int_flag), 16);
   EXPECT_FALSE(
       flags::PrivateHandleAccessor::IsSpecifiedOnCommandLine(*flag_01));
 
   EXPECT_TRUE(flags::PrivateHandleAccessor::ParseFrom(
-      flag_01, "011", flags::SET_FLAGS_VALUE, flags::kCommandLine, &err));
+      *flag_01, "011", flags::SET_FLAGS_VALUE, flags::kCommandLine, err));
   EXPECT_EQ(absl::GetFlag(FLAGS_int_flag), 11);
   EXPECT_TRUE(flags::PrivateHandleAccessor::IsSpecifiedOnCommandLine(*flag_01));
 
   EXPECT_TRUE(!flags::PrivateHandleAccessor::ParseFrom(
-      flag_01, "", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange, &err));
+      *flag_01, "", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange, err));
   EXPECT_EQ(err, "Illegal value '' specified for flag 'int_flag'");
 
   auto* flag_02 = flags::FindCommandLineFlag("string_flag");
   EXPECT_TRUE(flags::PrivateHandleAccessor::ParseFrom(
-      flag_02, "xyz", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange,
-      &err));
+      *flag_02, "xyz", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange,
+      err));
   EXPECT_EQ(absl::GetFlag(FLAGS_string_flag), "xyz");
 
   EXPECT_TRUE(flags::PrivateHandleAccessor::ParseFrom(
-      flag_02, "", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange, &err));
+      *flag_02, "", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange, err));
   EXPECT_EQ(absl::GetFlag(FLAGS_string_flag), "");
 }
 
@@ -187,15 +191,15 @@ TEST_F(CommandLineFlagTest, TestParseFromDefaultValue) {
   auto* flag_01 = flags::FindCommandLineFlag("int_flag");
 
   EXPECT_TRUE(flags::PrivateHandleAccessor::ParseFrom(
-      flag_01, "111", flags::SET_FLAGS_DEFAULT, flags::kProgrammaticChange,
-      &err));
+      *flag_01, "111", flags::SET_FLAGS_DEFAULT, flags::kProgrammaticChange,
+      err));
   EXPECT_EQ(flag_01->DefaultValue(), "111");
 
   auto* flag_02 = flags::FindCommandLineFlag("string_flag");
 
   EXPECT_TRUE(flags::PrivateHandleAccessor::ParseFrom(
-      flag_02, "abc", flags::SET_FLAGS_DEFAULT, flags::kProgrammaticChange,
-      &err));
+      *flag_02, "abc", flags::SET_FLAGS_DEFAULT, flags::kProgrammaticChange,
+      err));
   EXPECT_EQ(flag_02->DefaultValue(), "abc");
 }
 
@@ -207,25 +211,25 @@ TEST_F(CommandLineFlagTest, TestParseFromIfDefault) {
   auto* flag_01 = flags::FindCommandLineFlag("int_flag");
 
   EXPECT_TRUE(flags::PrivateHandleAccessor::ParseFrom(
-      flag_01, "22", flags::SET_FLAG_IF_DEFAULT, flags::kProgrammaticChange,
-      &err))
+      *flag_01, "22", flags::SET_FLAG_IF_DEFAULT, flags::kProgrammaticChange,
+      err))
       << err;
   EXPECT_EQ(absl::GetFlag(FLAGS_int_flag), 22);
 
   EXPECT_TRUE(flags::PrivateHandleAccessor::ParseFrom(
-      flag_01, "33", flags::SET_FLAG_IF_DEFAULT, flags::kProgrammaticChange,
-      &err));
+      *flag_01, "33", flags::SET_FLAG_IF_DEFAULT, flags::kProgrammaticChange,
+      err));
   EXPECT_EQ(absl::GetFlag(FLAGS_int_flag), 22);
   // EXPECT_EQ(err, "ERROR: int_flag is already set to 22");
 
   // Reset back to default value
   EXPECT_TRUE(flags::PrivateHandleAccessor::ParseFrom(
-      flag_01, "201", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange,
-      &err));
+      *flag_01, "201", flags::SET_FLAGS_VALUE, flags::kProgrammaticChange,
+      err));
 
   EXPECT_TRUE(flags::PrivateHandleAccessor::ParseFrom(
-      flag_01, "33", flags::SET_FLAG_IF_DEFAULT, flags::kProgrammaticChange,
-      &err));
+      *flag_01, "33", flags::SET_FLAG_IF_DEFAULT, flags::kProgrammaticChange,
+      err));
   EXPECT_EQ(absl::GetFlag(FLAGS_int_flag), 201);
   // EXPECT_EQ(err, "ERROR: int_flag is already set to 201");
 }
