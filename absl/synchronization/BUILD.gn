@@ -15,7 +15,8 @@ absl_source_set("graphcycles_internal") {
     "//third_party/abseil-cpp/absl/base:malloc_internal",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
   ]
-  visibility = [ "//third_party/abseil-cpp/absl/*" ]
+  visibility = []
+  visibility += [ "//third_party/abseil-cpp/absl/*" ]
 }
 
 absl_source_set("kernel_timeout_internal") {
@@ -25,7 +26,8 @@ absl_source_set("kernel_timeout_internal") {
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/time",
   ]
-  visibility = [ ":*" ]
+  visibility = []
+  visibility += [ ":*" ]
 }
 
 absl_source_set("synchronization") {
@@ -72,7 +74,8 @@ absl_source_set("thread_pool") {
     ":synchronization",
     "//third_party/abseil-cpp/absl/base:core_headers",
   ]
-  visibility = [ "//third_party/abseil-cpp/absl/*" ]
+  visibility = []
+  visibility += [ "//third_party/abseil-cpp/absl/*" ]
 }
 
 absl_source_set("per_thread_sem_test_common") {

@@ -47,7 +47,8 @@ absl_source_set("counting_allocator") {
   testonly = true
   public = [ "internal/counting_allocator.h" ]
   deps = [ "//third_party/abseil-cpp/absl/base:config" ]
-  visibility = [ ":*" ]
+  visibility = []
+  visibility += [ ":*" ]
 }
 
 absl_source_set("test_instance_tracker") {
@@ -55,7 +56,8 @@ absl_source_set("test_instance_tracker") {
   sources = [ "internal/test_instance_tracker.cc" ]
   public = [ "internal/test_instance_tracker.h" ]
   deps = [ "//third_party/abseil-cpp/absl/types:compare" ]
-  visibility = [ "//third_party/abseil-cpp/absl/*" ]
+  visibility = []
+  visibility += [ "//third_party/abseil-cpp/absl/*" ]
 }
 
 absl_source_set("flat_hash_map") {
@@ -194,7 +196,8 @@ absl_source_set("raw_hash_map") {
 
 absl_source_set("have_sse") {
   public = [ "internal/have_sse.h" ]
-  visibility = [ ":*" ]
+  visibility = []
+  visibility += [ ":*" ]
 }
 
 absl_source_set("common") {

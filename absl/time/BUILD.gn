@@ -44,5 +44,6 @@ absl_source_set("test_util") {
     "//third_party/googletest:gtest",
     "//third_party/googletest:gmock",
   ]
-  visibility = [ "//third_party/abseil-cpp/absl/time:*" ]
+  visibility = []
+  visibility += [ "//third_party/abseil-cpp/absl/time:*" ]
 }
