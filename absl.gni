@@ -89,6 +89,7 @@ template("absl_source_set") {
           "//third_party/webrtc/rtc_tools:video_replay",
 
           # Not used by Chromium directly.
+          "//chromecast/internal/*",
           "//libassistant/*",
         ]
       } else {
