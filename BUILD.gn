@@ -53,14 +53,6 @@ component("absl") {
       }
     }
   }
-
-  # Usage of Abseil in Chromium is guarded by an explicit opt-in list, before
-  # adding projects to this list please reach out to cxx@chromium.org and CC:
-  # - https://cs.chromium.org/chromium/src/third_party/abseil-cpp/OWNERS
-  #
-  # More information can be found at:
-  # https://docs.google.com/document/d/1DgS1-A3rzboTLjpf4m1sqkJgWjnY_Ru2dokk1X1vBDU
-  visibility = absl_visibility
 }
 
 group("absl_component_deps") {
@@ -69,8 +61,8 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/container:flat_hash_map",
     "//third_party/abseil-cpp/absl/container:fixed_array",
+    "//third_party/abseil-cpp/absl/container:flat_hash_map",
     "//third_party/abseil-cpp/absl/container:flat_hash_set",
     "//third_party/abseil-cpp/absl/container:inlined_vector",
     "//third_party/abseil-cpp/absl/debugging:failure_signal_handler",
