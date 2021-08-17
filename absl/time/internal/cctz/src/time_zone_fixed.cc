@@ -32,19 +32,19 @@ namespace {
 // The prefix used for the internal names of fixed-offset zones.
 const char kFixedZonePrefix[] = "Fixed/UTC";
 
-const char kDigits[] = "0123456789";
+const char kDigits2[] = "0123456789";
 
 char* Format02d(char* p, int v) {
-  *p++ = kDigits[(v / 10) % 10];
-  *p++ = kDigits[v % 10];
+  *p++ = kDigits2[(v / 10) % 10];
+  *p++ = kDigits2[v % 10];
   return p;
 }
 
 int Parse02d(const char* p) {
-  if (const char* ap = std::strchr(kDigits, *p)) {
-    int v = static_cast<int>(ap - kDigits);
-    if (const char* bp = std::strchr(kDigits, *++p)) {
-      return (v * 10) + static_cast<int>(bp - kDigits);
+  if (const char* ap = std::strchr(kDigits2, *p)) {
+    int v = static_cast<int>(ap - kDigits2);
+    if (const char* bp = std::strchr(kDigits2, *++p)) {
+      return (v * 10) + static_cast<int>(bp - kDigits2);
     }
   }
   return -1;

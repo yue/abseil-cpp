@@ -11,12 +11,45 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 import("//third_party/abseil-cpp/absl.gni")
+import("//third_party/abseil-cpp/filenames.gni")
 
 config("absl_component_build") {
   defines = [ "ABSL_CONSUME_DLL" ]
 }
 
-component("absl") {
+jumbo_component("absl") {
+  always_build_jumbo = true
+  jumbo_max_file_count = 100
+
+  # GN could not include .inc files in "gn desc" somehow, so force including
+  # them by putting them in public.
+  public = absl_inc_files
+
+  public_deps = [
+    ":absl_externals",
+    ":absl_internals",
+  ]
+
+  if (is_component_build) {
+    public_configs = [ ":absl_component_build" ]
+  }
+
+  if (is_mac) {
+    frameworks = [ "AppKit.framework" ]
+  }
+}
+
+# The internal files may have same filenames with other sources and will cause
+# errors in GN.
+absl_source_set("absl_externals") {
+  sources = absl_externals
+}
+absl_source_set("absl_internals") {
+  sources = absl_internals
+  include_dirs = [ "./absl/time/internal/cctz/src" ]
+}
+
+component("absl_original") {
   public_deps = [ ":absl_component_deps" ]
   if (is_component_build) {
     public_configs = [ ":absl_component_build" ]
@@ -95,7 +128,7 @@ group("absl_component_deps") {
     ]
   }
 
-  visibility = [ ":absl" ]
+  visibility = [ ":absl_original" ]
 }
 
 group("default") {
