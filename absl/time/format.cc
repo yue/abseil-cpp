@@ -43,7 +43,7 @@ struct cctz_parts {
   cctz::detail::femtoseconds fem;
 };
 
-inline cctz::time_point<cctz::seconds> unix_epoch() {
+inline cctz::time_point<cctz::seconds> unix_epoch2() {
   return std::chrono::time_point_cast<cctz::seconds>(
       std::chrono::system_clock::from_time_t(0));
 }
@@ -55,7 +55,7 @@ cctz_parts Split(absl::Time t) {
   const auto d = time_internal::ToUnixDuration(t);
   const int64_t rep_hi = time_internal::GetRepHi(d);
   const int64_t rep_lo = time_internal::GetRepLo(d);
-  const auto sec = unix_epoch() + cctz::seconds(rep_hi);
+  const auto sec = unix_epoch2() + cctz::seconds(rep_hi);
   const auto fem = cctz::detail::femtoseconds(rep_lo * (1000 * 1000 / 4));
   return {sec, fem};
 }
@@ -63,7 +63,7 @@ cctz_parts Split(absl::Time t) {
 // Joins the given seconds and femtoseconds into a Time. See duration.cc for
 // details about rep_hi and rep_lo.
 absl::Time Join(const cctz_parts& parts) {
-  const int64_t rep_hi = (parts.sec - unix_epoch()).count();
+  const int64_t rep_hi = (parts.sec - unix_epoch2()).count();
   const uint32_t rep_lo =
       static_cast<uint32_t>(parts.fem.count() / (1000 * 1000 / 4));
   const auto d = time_internal::MakeDuration(rep_hi, rep_lo);
