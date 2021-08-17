@@ -17,10 +17,14 @@
 #    deps = [ ":bar" ]
 #  }
 
+import("//build/config/jumbo.gni")
 import("//build_overrides/build.gni")
 
 template("absl_source_set") {
-  source_set(target_name) {
+  jumbo_source_set(target_name) {
+    always_build_jumbo = true
+    jumbo_max_file_count = 100
+
     forward_variables_from(invoker, "*")
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
