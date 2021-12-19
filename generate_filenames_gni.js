@@ -5,7 +5,7 @@ const {searchFiles} = require('../../scripts/common')
 const fs = require('fs')
 
 process.chdir('third_party/abseil-cpp')
-const files = searchFiles('absl', ['.cc', '.h'])
+const files = searchFiles('absl', ['.cc', '.h']).sort()
 const sources = files.filter(shouldInclude)
 const internals = sources.filter(s => s.includes('internal'))
 const externals = sources.filter(s => !s.includes('internal'))
@@ -21,6 +21,7 @@ function shouldInclude(f) {
   return !f.includes('test') &&
          !f.includes('benchmark') &&
          !f.includes('/random/') &&
+         !f.endsWith('/bad_any_cast.cc') &&
          !f.endsWith('/print_hash_of.cc')
 }
 

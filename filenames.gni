@@ -335,7 +335,6 @@ absl_externals = [
   "absl/time/time.cc",
   "absl/time/time.h",
   "absl/types/any.h",
-  "absl/types/bad_any_cast.cc",
   "absl/types/bad_any_cast.h",
   "absl/types/bad_optional_access.cc",
   "absl/types/bad_optional_access.h",
